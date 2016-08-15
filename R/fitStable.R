@@ -143,7 +143,7 @@ mleFit <-
     # Fit:
     fit = list(estimate = c(alpha, beta, gamma, delta),
                minimum = -r$objective, code = r$convergence, gradient = r$gradient)
-
+class(fit)<-"stableFit"
     # Return Value:
 ans<-list(call=CALL, fit=fit,title=title)
 class(ans)<-"myStable"

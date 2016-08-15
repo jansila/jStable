@@ -19,7 +19,7 @@ dyn.load("src/stable.so")
 
 #' @useDynLib stable stable
 denStable <- function(input, vec=NULL, alpha=1.8, beta=0, gamma=1/sqrt(2), delta=0,
-                    npt=501, up=10, eps=1.0e-6, integration="Romberg"){
+                    npt=501, up=10, eps=1.0e-6){
 
   if(!is.null(vec) && class(vec)=="stableFit" && !any(is.na(vec$estimate)) ){
     alpha=c(vec$estimate[1])
@@ -29,12 +29,11 @@ denStable <- function(input, vec=NULL, alpha=1.8, beta=0, gamma=1/sqrt(2), delta
     }else{alpha=alpha;beta=beta;gamma=gamma;delta=delta}
 
 #special cases
-#  if (alpha == 2 && beta==0) {
-  #  return(stats::dnorm(y, mean = 0, sd = 1))
- # } else{ if (alpha == 1 && beta == 0) {
-#return(stats::dcauchy(y, log=log))}}
+  if (alpha == 2 && beta==0) {
+        return(stats::dnorm(y, mean = 0, sd = 1))
+  } else{ if (alpha == 1 && beta == 0) {
+        return(stats::dcauchy(y, log=log))}}
 
-  type <- ifelse(integration=="Simpson",1,2)
 
   ly <- length(input)
   z0 <- rep(0,ly)
@@ -49,7 +48,6 @@ denStable <- function(input, vec=NULL, alpha=1.8, beta=0, gamma=1/sqrt(2), delta
 	  as.integer(npt),
 	  up,
 	  eps,
-	  as.integer(type),
 	  err=integer(1),
 	  ffy=double(ly))
 

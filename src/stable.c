@@ -16,7 +16,7 @@ static double fcn2(double s);
 static void interp(double a[],double fap[], int n, double *f, double *df);
 static double mpr(double (*fcn)(double), int n);
 double romberg(double (*fcn)(double), double eps);
-void stable(int *n, double *y, double *beta, double *alpha, int *npt, double *up, double *eps, int*type, int *err, double *ffy);
+void stable(int *n, double *y, double *beta, double *alpha, int *npt, double *up, double *eps, int *err, double *ffy);
 
 static double fcn1(double s){
   double sa;
@@ -101,7 +101,7 @@ double romberg(double (*fcn)(double), double eps)
     fx[j+1]=fx[j];}
   return(R_NaN);}
 
-void stable(int *n, double *y, double *beta, double *alpha, int *npt, double *up, double *eps, int *type, int *err, double *ffy)
+void stable(int *n, double *y, double *beta, double *alpha, int *npt, double *up, double *eps, int *err, double *ffy)
 {
   int i, j;
   double h, s, *eta, *seta, *ceta, *sa;
@@ -119,23 +119,13 @@ void stable(int *n, double *y, double *beta, double *alpha, int *npt, double *up
     eta[i]=beta[i]*(1.0-fabs(1.0-alpha[i]))*M_PI/2.0;
     seta[i]=sin(eta[i]);
     ceta[i]=cos(eta[i]);}
-  if(*type==1){
-    *npt=*npt-*npt%2;
-    h=*up/ *npt;
-	   for(j=0;j<=*npt;j++){
-	     s=(*npt-j)*h;
-	     for(i=0;i<*n;i++){
-	       sa[i]=pow(s,alpha[i]);
-	       ffy[i]=ffy[i]+(4-2*(j%2==0)-(j==1||j==*npt))*cos(-y[i]*s+sa[i]*seta[i])*exp(-sa[i]*ceta[i]);}}
-	   for(i=0;i<*n;i++)ffy[i]=ffy[i]*h/3.0/M_PI;}
-  else {
     for(i=0;i<*n;i++){
       alphai=alpha[i];
       yi=y[i];
       setai=seta[i];
       cetai=ceta[i];
       ffy[i]=romberg(fcn1, *eps)+romberg(fcn2, *eps);}
-    for(i=0;i<*n;i++)ffy[i]=ffy[i]/M_PI;}
+    for(i=0;i<*n;i++)ffy[i]=ffy[i]/M_PI;
   free((char *)sa);
   free((char *)ceta);
   free((char *)seta);

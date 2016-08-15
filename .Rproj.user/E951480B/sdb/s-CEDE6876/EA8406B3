@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "library(dplyr)\nlibrary(reshape2)\n\n# Fake data\nset.seed(5)\ndat = data.frame(replicate(5,sample(1:3,20,replace=TRUE)), \n                 val1=rnorm(20), val2=rnorm(20))\n\ndat %>% melt(id.var=c(\"val1\",\"val2\"),variable.name=\"cols\",value.name=\"group\") %>%\n  group_by(cols,group) %>% summarise_all(max)\n",
+    "created" : 1471218722261.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "992164258",
+    "id" : "EA8406B3",
+    "lastKnownWriteTime" : -3610169987974561786,
+    "last_content_update" : 1471219608102,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled2"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

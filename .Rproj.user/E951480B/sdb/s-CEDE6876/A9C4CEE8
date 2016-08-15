@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#exportPattern(\"^[[:alpha:]]+\")\nexportPattern(\".\")\nuseDynLib(stable)\n",
+    "created" : 1471004111891.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3625674256",
+    "id" : "A9C4CEE8",
+    "lastKnownWriteTime" : 1470959458,
+    "last_content_update" : 1470959458,
+    "path" : "~/Desktop/Dissertation/myPack/myStable/NAMESPACE",
+    "project_path" : "NAMESPACE",
+    "properties" : {
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_namespace"
+}

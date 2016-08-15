@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "testMLE<-function(x){\n  s1<-proc.time()\n  fB<-fBasics::stableFit(x,type=\"mle\",doplot=F, trace=F)\n  t1<-proc.time()-s1\n\n  s2<-proc.time()\n  me<-mleFit(x,init=NULL)\n  t2<-proc.time()-s2\n\n  ans<-list(\"fBasics\"=list(\"estimate\"=fB@fit$estimate,\"convergence\"=fB@fit$code,\"time\"=t1[1]),\n            \"myStable\"=list(\"estimate\"=me$fit$estimate,\"convergence\"=me$fit$code,\"time\"=t2[1]))\nreturn(ans)\n}\n\n\nrequire(tawny)\ndata(\"sp500.subset\")\nrnorm<-rnorm(200)\nrt<-rt(200,4)\ncauch<-rcauchy(200)\ntestingData<-matrix(cbind(rnorm,rt,cauch,as.matrix(sp500.subset,nrow=200)),nrow=200)\n\ncomp<-lapply(1:78,function(x) testMLE(testingData[,x]))\n\nresults<-data.frame(matrix(unlist(comp),ncol=12,byrow=T))\ncolnames(results)<-c(\"fBalpha\",\"fBbeta\",\"fBgamma\",\"fBdelta\",\"fBconv\",\"fBtime\",\"alpha\",\"beta\",\"gamma\",\"delta\",\"conv\",\"time\")\n\ndiff<-data.frame(as.matrix(results[,7:10],ncol=4)-as.matrix(results[,1:4],ncol=4))\ncolnames(diff)<-c(\"alpha\",\"beta\",\"gamma\",\"delta\")\ndiff$time<-results$fBtime/results$time\nrequire(ggplot2)\n\n\nplotComp<-function(x){\n  plot(testingData[,x],denStable(testingData[,x], alpha=results$fBalpha[x], beta=results$fBbeta[x], gamma=results$fBgamma[x], delta=results$fBdelta[x]), col=\"blue\")\n  points(testingData[,x],denStable(testingData[,x], alpha=results$alpha[x],beta=results$beta[x],gamma=results$gamma[x],delta=results$delta[x]), col=\"blue\", pch=4)\n\n   points(testingData[,x],stabledist::dstable(testingData[,x], alpha=results$fBalpha[x], beta=results$fBbeta[x], gamma=results$fBgamma[x], delta=results$fBdelta[x]), col=\"red\")\n  points(testingData[,x],stabledist::dstable(testingData[,x], alpha=results$alpha[x],beta=results$beta[x],gamma=results$gamma[x],delta=results$delta[x]), col=\"red\", pch=4)\n\n}\n\np1<-ggplot(diff, aes(x=observations,y=alpha))+geom_point()\np2<-ggplot(diff, aes(x=observations,y=beta))+geom_point()\np3<-ggplot(diff, aes(x=observations,y=gamma))+geom_point()\np4<-ggplot(diff, aes(x=observations,y=delta))+geom_point()\n\nmultiplot(plotlist=list(p1,p3,p2,p4),cols=2)\nggplot(diff,aes(x=observations,y=time))+geom_point()\n\n\npdf(file=\"densityplots.pdf\",paper=\"a4r\")\nfor(i in 1:16){\nplotComp(order(diff$beta,decreasing=T)[i])\n}\n",
+    "created" : 1471005921048.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1461525468",
+    "id" : "91113E77",
+    "lastKnownWriteTime" : 1471257708,
+    "last_content_update" : 1471257708433,
+    "path" : "~/Desktop/testScript.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

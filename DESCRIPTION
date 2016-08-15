@@ -1,0 +1,11 @@
+Package: jStable
+Type: Package
+Title: MLE estimation of stable distributions
+Version: 0.1.0
+Author: Jan Sila <js822@student.le.ac.uk>
+Maintainer: Jan Sila <jansila@icloud.com>
+Description: Package is compilation of fBasics::stableFit, C implementation of density estimation from old CRAN package stable and uses stabledist::qstable function from package stabledist
+License: GPL-3
+LazyData: TRUE
+RoxygenNote: 5.0.1
+Depends: stabledist

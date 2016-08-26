@@ -1,11 +1,8 @@
+# Core of functions implemented by Diethelm Wuertz, minor adjustments by Jan Sila
 
-quantFit <-
-  function(x, title = NULL, doplot=FALSE,description = NULL)
-  {
-    # A function implemented by Diethelm Wuertz
 
-    CALL = match.call()
-
+quantFit <-function(x, title = NULL, doplot=FALSE,description = NULL){
+call<-match.call()
     # Load Contour Table:
     # data(PhiStable)
     Phi1 = .PhiStable$Phi1
@@ -23,11 +20,8 @@ quantFit <-
     q05 = r[round(0.05*N)]
     phi1 = max( (q95-q05) / (q75-q25), 2.4389 )
     phi2 = ((q95-q50)-(q50-q05)) / (q95-q05)
-  #  print(c(min(Phi1), phi1, max(Phi1)))
-  #  print(c(min(Phi2), phi2, max(Phi2)))
 
-
-    # Extract Estimate from Contours, if possible:
+      # Extract Estimate from Contours, if possible:
     u = contourLines(alpha, beta, Phi1, levels = phi1)
     Len = length(u)
     if( Len > 0) {
@@ -46,22 +40,18 @@ quantFit <-
       U = V = NA
     }
 
-    # Add Title and Description:
-    if (is.null(title)) title = "Stable Parameter Estimation"
-    # if (is.null(description)) description = description()
-
     if (is.na(U) | is.na(V)) {
       GAM = NA
     } else {
-      phi3 = qstable(0.75, U, V) -
-        qstable(0.25, U, V)
+      phi3 = quantStable(0.75, U, V) -
+        quantStable(0.25, U, V)
       GAM = (q75-q25) / phi3
     }
 
     if (is.na(U) | is.na(V)) {
       DELTA = NA
     } else {
-      phi4 = -qstable(0.50, U, V) + V*tan(pi*U/2)
+      phi4 = -quantStable(0.50, U, V) + V*tan(pi*U/2)
       DELTA = phi4*GAM - V*GAM*tan(pi*U/2) + q50
     }
 
@@ -69,7 +59,7 @@ quantFit <-
     fit = list(estimate=c(alpha = U, beta = V, gamma = GAM, delta = DELTA))
   class(fit)<-"stableFit"
     # Return Value:
-    ans<-list("call" = as.call(CALL),
+    ans<-list("call" = call,
         "model" = "Stable Distribution",
         "fit" = fit)
     class(ans)<-"myStable"
@@ -79,18 +69,17 @@ quantFit <-
 
 # ------------------------------------------------------------------------------
 
-mleFit <-
-  function(input, init=NULL, trace = FALSE, title = NULL, description = NULL){
-    # A function implemented by Diethelm Wuertz
+mleFit <-function(input, init=NULL, trace = FALSE, title = NULL, description = NULL){
 
-    # FUNCTION:
+    call<-match.call()
 
     if(is.null(init)){init=quantFit(input)$fit$estimate
     x=as.vector(init)
     alpha=x[1]
     beta=x[2]
     gamma=x[3]
-    delta=x[4]}else{x=init}
+    delta=x[4]
+    }else{x=init}
 
     if(any(is.na(x))){
       x<-c(1.8,0,0.7,0)
@@ -100,11 +89,7 @@ mleFit <-
       gamma=x[3]
       delta=x[4]
     }
-    # Settings:
-    CALL = match.call()
-#  cat("\n x init is: ",x,"\n")
 
-    # Log-likelihood Function:
 
       obj = function(input, x , trace = FALSE) {
 #        cat("\nparameters are: ", c(x[1],x[2],x[3],x[4],"\n"))
@@ -124,8 +109,8 @@ mleFit <-
     r <- nlminb(
       objective = obj,
       start = c(x[1], x[2], x[3], x[4]),
-      lower = c( 1, -1+eps, 0+eps, -Inf),
-      upper = c(2-eps, 1-eps,  Inf,  Inf),
+      lower = c( 1, -0.95+eps, 0+eps, -Inf),
+      upper = c(2-eps, 0.95-eps,  1-eps,  Inf),
       input = input, trace = trace)
 
 
@@ -142,10 +127,10 @@ mleFit <-
 
     # Fit:
     fit = list(estimate = c(alpha, beta, gamma, delta),
-               minimum = -r$objective, code = r$convergence, gradient = r$gradient)
+               minimum = -r$objective, AIC=8-2*log(r$objective),code = r$convergence, gradient = r$gradient)
 class(fit)<-"stableFit"
     # Return Value:
-ans<-list(call=CALL, fit=fit,title=title)
+ans<-list("call"=call, "fit"=fit)
 class(ans)<-"myStable"
 return(ans)
   }
@@ -155,7 +140,6 @@ return(ans)
 phiFun <-
   function()
   {
-    # A function implemented by Diethelm Wuertz
 
     # Description:
     #   Creates contour table for McCulloch estimators

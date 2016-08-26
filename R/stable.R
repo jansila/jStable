@@ -18,7 +18,7 @@ dyn.load("src/stable.so")
 
 
 #' @useDynLib stable stable
-denStable <- function(input, vec=NULL, alpha=1.8, beta=0, gamma=1/sqrt(2), delta=0,
+denStable <- function(input, vec=NULL, alpha=1.8, beta=0, gamma=1, delta=0,
                     npt=501, up=10, eps=1.0e-6){
 
   if(!is.null(vec) && class(vec)=="stableFit" && !any(is.na(vec$estimate)) ){
@@ -29,10 +29,10 @@ denStable <- function(input, vec=NULL, alpha=1.8, beta=0, gamma=1/sqrt(2), delta
     }else{alpha=alpha;beta=beta;gamma=gamma;delta=delta}
 
 #special cases
-  if (alpha == 2 && beta==0) {
-        return(stats::dnorm(y, mean = 0, sd = 1))
-  } else{ if (alpha == 1 && beta == 0) {
-        return(stats::dcauchy(y, log=log))}}
+#  if (alpha == 2 && beta==0) {
+#        return(stats::dnorm(y, mean = 0, sd = 1))
+#  } else{ if (alpha == 1 && beta == 0) {
+#        return(stats::dcauchy(y, log=log))}}
 
 
   ly <- length(input)
@@ -75,8 +75,9 @@ probStable <- function(y, loc=0,disp=1/sqrt(2),skew=0,tail=2,eps=1.0e-6){
   skew <- skew+z0
   tail <- tail+z0
   eta <- skew*(1-abs(1-tail))*pi/2
-#        if ((yy==0)&(eta==0)) return(0.5+z0)
-  z <- .C("pstable",
+       if ((yy==0)&(eta==0)) return(0.5+z0)
+
+    z <- .C("pstable",
 	  as.integer(ly),
 	  yy,
 	  skew,
@@ -90,16 +91,19 @@ probStable <- function(y, loc=0,disp=1/sqrt(2),skew=0,tail=2,eps=1.0e-6){
 # Quantile function of a stable random variable
 #
 
-quantStable <- function(p, alpha=2,beta=0,gamma=1/sqrt(2),delta=0){
+quantStable <- function(p, alpha=1.8,beta=0,gamma=1,delta=0){
  if(alpha==2){return(qnorm(p))}
 
   if(alpha==1 && beta){return(qcauchy(p))}
 
-  stabledist::qstable(p, alpha=alpha,beta=beta,gamma=gamma,delta=delta)
+  q<-Vectorize(stabledist::qstable,vectorize.args = c("p","alpha","beta","gamma","delta"))
+
+    q(p,alpha,beta,gamma,delta,pm=1)
+
   }
 
 ###########################################################################
 # Generation of stable random deviates
 #
-randStable <- function(n=1,delta=0,gamma=1/sqrt(2),beta=0,alpha=2){
+randStable <- function(n=1,delta=0,gamma=1,beta=0,alpha=2){
  return(quantStable(runif(n),delta=delta,gamma=gamma,beta=beta,alpha=alpha))}
